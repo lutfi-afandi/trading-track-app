@@ -399,7 +399,7 @@
                     },
                     {
                         data: 'type',
-                        render: d => `<span class="badge ${d=='BUY'?'bg-indigo-subtle text-indigo':'bg-rose-subtle text-rose'}">${d}</span>`
+                        render: d => `<span class="badge ${d=='BUY'?'bg-success-subtle text-success':'bg-danger-subtle text-danger'}">${d}</span>`
                     },
                     {
                         data: 'stock_code',
