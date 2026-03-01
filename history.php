@@ -1,0 +1,459 @@
+<?php require 'config.php'; ?>
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - TradePulse</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7fa;
+            color: #334155;
+        }
+
+        /* Sidebar Styling */
+        #sidebar {
+            min-width: 260px;
+            max-width: 260px;
+            background: #fff;
+            border-right: 1px solid #e2e8f0;
+            min-height: 100vh;
+            position: fixed;
+            transition: all 0.3s;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 40px;
+        }
+
+        .nav-link {
+            color: #64748b;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-link:hover {
+            background: #f8fafc;
+            color: #4f46e5;
+        }
+
+        .nav-link.active {
+            background: #4f46e5;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Modern Card */
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            background: none;
+            border-bottom: 1px solid #f1f5f9;
+            padding: 20px;
+            font-weight: 700;
+        }
+
+        /* Trade Toggle Buy/Sell */
+        .trade-toggle {
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 12px;
+            display: flex;
+        }
+
+        .trade-toggle input[type="radio"] {
+            display: none;
+        }
+
+        .trade-toggle label {
+            flex: 1;
+            text-align: center;
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            color: #64748b;
+        }
+
+        #buy-radio:checked+label {
+            background: #fff;
+            color: #059669;
+        }
+
+        #sell-radio:checked+label {
+            background: #fff;
+            color: #dc2626;
+        }
+
+        /* Table Style */
+        .table-portfolio thead th {
+            background-color: #f8fafc;
+            padding: 1.25rem 1rem !important;
+            color: #64748b;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .table-portfolio tbody td {
+            padding: 1.5rem 1rem !important;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .badge-buy {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .badge-sell {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .stock-badge {
+            font-weight: 800;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        /* Sidebar Styling */
+        #sidebar {
+            min-width: 260px;
+            max-width: 260px;
+            background: #fff;
+            border-right: 1px solid #e2e8f0;
+            min-height: 100vh;
+            position: fixed;
+            transition: all 0.3s;
+            z-index: 1050;
+            /* Pastikan di atas konten */
+        }
+
+        /* Responsivitas untuk Layar Kecil */
+        @media (max-width: 992px) {
+            #sidebar {
+                margin-left: -260px;
+                /* Sembunyikan sidebar ke kiri */
+            }
+
+            #sidebar.active {
+                margin-left: 0;
+                /* Munculkan saat class 'active' ditambah */
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 20px !important;
+            }
+
+            /* Overlay saat sidebar muncul di mobile */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1040;
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 40px;
+            transition: all 0.3s;
+        }
+
+        /* Tombol Hamburger (Hanya muncul di mobile) */
+        #mobile-toggle {
+            display: none;
+        }
+
+        @media (max-width: 992px) {
+            #mobile-toggle {
+                display: block;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="d-flex">
+        <nav id="sidebar" class="p-4 d-flex flex-column">
+            <div class="mb-5 px-3">
+                <h4 class="fw-bold text-primary mb-0"><i class="fa-solid fa-chart-line me-2"></i>TradePulse</h4>
+                <small class="text-muted">Stock Portfolio v2.0</small>
+            </div>
+            <a href="index.php" class="nav-link"><i class="fa-solid fa-house me-2"></i> Dashboard</a>
+            <a href="history.php" class="nav-link active"><i class="fa-solid fa-history me-2"></i> Riwayat Transaksi</a>
+        </nav>
+
+        <div class="main-content">
+            <button id="mobile-toggle" class="btn btn-white border shadow-sm rounded-3 px-3 py-2" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars me-2"></i> Menu
+            </button>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0">Transaction History</h3>
+            </div>
+
+            <!-- card filter -->
+            <style>
+                /* Menggunakan font utama kamu */
+                .filter-card {
+                    background: linear-gradient(to right, #ffffff, #f8fafc);
+                    border-left: 5px solid #4338ca !important;
+                    /* Aksen warna Indigo */
+                }
+
+                .accent-line {
+                    width: 4px;
+                    height: 20px;
+                    background-color: #4338ca;
+                    border-radius: 10px;
+                }
+
+                /* Styling Floating Label & Input */
+                .form-floating>.form-control {
+                    height: calc(3.5rem + 2px);
+                    line-height: 1.25;
+                    font-weight: 500;
+                    color: #1e293b;
+                }
+
+                .form-floating>label {
+                    padding: 1rem 0.75rem;
+                    color: #64748b !important;
+                    font-size: 0.75rem !important;
+                }
+
+                /* Custom Buttons */
+                .btn-indigo {
+                    background-color: #4338ca;
+                    color: white;
+                    transition: all 0.3s ease;
+                }
+
+                .btn-indigo:hover {
+                    background-color: #3730a3;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(67, 56, 202, 0.2);
+                    color: white;
+                }
+
+                .btn-soft-light {
+                    background-color: #f1f5f9;
+                    border: 1px solid #e2e8f0;
+                    transition: all 0.3s ease;
+                }
+
+                .btn-soft-light:hover {
+                    background-color: #e2e8f0;
+                    color: #334155;
+                }
+
+                .btn-emerald {
+                    background-color: #10b981;
+                    color: white;
+                    transition: all 0.3s ease;
+                }
+
+                .btn-emerald:hover {
+                    background-color: #059669;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+                    color: white;
+                }
+
+                /* Memisahkan tombol export di layar desktop */
+                @media (min-width: 768px) {
+                    .ms-auto-md {
+                        margin-left: auto !important;
+                    }
+                }
+            </style>
+            <div class="card p-4 mb-4 rounded-4 shadow-sm border-0 filter-card">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="accent-line me-2"></div>
+                    <h6 class="mb-0 fw-bold text-dark" style="letter-spacing: 0.5px;">FILTER LAPORAN</h6>
+                </div>
+
+                <form id="filter-form" class="row g-3 align-items-center">
+                    <div class="col-md-3">
+                        <div class="form-floating custom-input-group">
+                            <input type="date" class="form-control border-0 bg-light rounded-3" id="start_date" name="start_date" placeholder="Dari Tanggal">
+                            <label for="start_date" class="text-muted small fw-bold">DARI TANGGAL</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-floating custom-input-group">
+                            <input type="date" class="form-control border-0 bg-light rounded-3" id="end_date" name="end_date" placeholder="Sampai Tanggal">
+                            <label for="end_date" class="text-muted small fw-bold">SAMPAI TANGGAL</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 d-flex gap-2">
+                        <button type="button" id="btn-filter" class="btn btn-indigo px-4 rounded-3 shadow-sm flex-grow-1 flex-md-grow-0">
+                            <i class="fa-solid fa-filter me-2"></i> Filter
+                        </button>
+                        <button type="button" id="btn-reset" class="btn btn-soft-light px-4 rounded-3 text-secondary flex-grow-1 flex-md-grow-0">
+                            <i class="fa-solid fa-rotate-left me-2"></i> Reset
+                        </button>
+
+                        <div class="ms-auto-md">
+                            <button type="button" id="btn-export" class="btn btn-emerald px-4 rounded-3 shadow-sm">
+                                <i class="fa-solid fa-file-excel me-2"></i> Export Excel
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card p-4 rounded-4 shadow-sm border-0 bg-white">
+                <div class="table-responsive">
+                    <table id="table-history" class="table table-hover w-100">
+                        <thead>
+                            <tr>
+                                <th>Waktu</th>
+                                <th>Tipe</th>
+                                <th>Saham</th>
+                                <th class="text-end">Harga</th>
+                                <th class="text-end">Lot</th>
+                                <th class="text-end">Net</th>
+                                <th class="text-end">P/L</th>
+                                <th>Catatan</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        const formatIDR = (val) => new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(val);
+        const formatTanggalIndo = (dateString) => {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        };
+
+        $(document).ready(function() {
+            // Initialize DataTable
+            const table = $('#table-history').DataTable({
+                ajax: {
+                    url: 'api.php?action=get_history_all',
+                    data: function(d) {
+                        d.start_date = $('#start_date').val();
+                        d.end_date = $('#end_date').val();
+                    }
+                },
+                order: [
+                    [0, 'desc']
+                ], // Urutkan berdasarkan kolom waktu (index 0) dari terbaru
+                responsive: true,
+                columns: [{
+                        data: 'transaction_date',
+                        render: d => formatTanggalIndo(d)
+                    },
+                    {
+                        data: 'type',
+                        render: d => `<span class="badge ${d=='BUY'?'bg-indigo-subtle text-indigo':'bg-rose-subtle text-rose'}">${d}</span>`
+                    },
+                    {
+                        data: 'stock_code',
+                        render: d => `<span class="fw-bold text-dark">${d}</span>`
+                    },
+                    {
+                        data: 'price_per_lot',
+                        className: 'text-end',
+                        render: d => formatIDR(d)
+                    },
+                    {
+                        data: 'lot',
+                        className: 'text-end'
+                    },
+                    {
+                        data: 'net_amount',
+                        className: 'text-end',
+                        render: d => formatIDR(d)
+                    },
+                    {
+                        data: 'profit_loss',
+                        className: 'text-end',
+                        render: d => d != 0 ? `<span class="${d>0?'text-success':'text-danger'} fw-bold">${formatIDR(d)}</span>` : '-'
+                    },
+                    {
+                        data: 'notes',
+                        render: d => `<small class="text-muted">${d || '-'}</small>`
+                    }
+                ]
+            });
+
+            // Action Filter
+            $('#btn-filter').click(() => table.ajax.reload());
+
+            // Action Reset
+            $('#btn-reset').click(() => {
+                $('#start_date, #end_date').val('');
+                table.ajax.reload();
+            });
+
+            // Action Export Excel
+            $('#btn-export').click(() => {
+                const start = $('#start_date').val();
+                const end = $('#end_date').val();
+                // Arahkan ke file PHP khusus export
+                window.location.href = `export_excel.php?start_date=${start}&end_date=${end}`;
+            });
+        });
+
+        function toggleSidebar() {
+            $('#sidebar').toggleClass('active');
+            $('.sidebar-overlay').toggleClass('show');
+        }
+    </script>
+</body>
+
+</html>
