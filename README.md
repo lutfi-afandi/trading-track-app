@@ -60,6 +60,7 @@ CREATE TABLE `transaction_history` (
   PRIMARY KEY (`id`),
   INDEX (`stock_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
 
 ---
 
@@ -93,4 +94,3 @@ CREATE TABLE `transaction_history` (
 ---
 
 _Developed with ✨ for better trading discipline._
-```
