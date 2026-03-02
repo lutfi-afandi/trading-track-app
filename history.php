@@ -10,6 +10,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
 
 </head>
 
@@ -181,12 +183,7 @@
 
 
         $(document).ready(function() {
-            $.getJSON('api.php?action=get_dashboard', function(res) {
-                currentPortfolio = res.portfolio;
-                const plText = formatIDR(res.total_pl);
-                $('#total-profit, #stat-total-pl').text(plText).toggleClass('text-success', res.total_pl >= 0).toggleClass('text-danger', res.total_pl < 0);
 
-            });
             // Initialize DataTable
             const table = $('#table-history').DataTable({
                 ajax: {
@@ -198,11 +195,49 @@
                 },
                 order: [
                     [0, 'desc']
-                ], // Urutkan berdasarkan kolom waktu (index 0) dari terbaru
+                ],
                 responsive: true,
+                // --- TAMBAHKAN BAGIAN INI ---
+                columnDefs: [{
+                        width: "15%",
+                        targets: 0
+                    }, // Waktu
+                    {
+                        width: "8%",
+                        targets: 1
+                    }, // Tipe (BUY/SELL)
+                    {
+                        width: "10%",
+                        targets: 2
+                    }, // Saham
+                    {
+                        width: "12%",
+                        targets: 3
+                    }, // Harga
+                    {
+                        width: "7%",
+                        targets: 4
+                    }, // Lot
+                    {
+                        width: "15%",
+                        targets: 5
+                    }, // Net
+                    {
+                        width: "15%",
+                        targets: 6
+                    }, // P/L
+                    {
+                        width: "18%",
+                        targets: 7
+                    } // Catatan (lebih lebar biar muat teks)
+                ],
+                autoWidth: false, // Wajib set false agar ukuran di atas dipatuhi
+                // ----------------------------
                 columns: [{
                         data: 'transaction_date',
-                        render: d => formatTanggalIndo(d)
+                        render: function(data, type, row) {
+                            return type === 'display' ? formatTanggalIndo(data) : data;
+                        }
                     },
                     {
                         data: 'type',
@@ -229,15 +264,14 @@
                     {
                         data: 'profit_loss',
                         className: 'text-end',
-                        render: d => d != 0 ? `<span class="${d>0?'text-success':'text-danger'} fw-bold">${formatIDR(d)}</span>` : '-'
+                        render: d => (d && d != 0) ? `<span class="${d>0?'text-success':'text-danger'} fw-bold">${formatIDR(d)}</span>` : '-'
                     },
                     {
                         data: 'notes',
-                        render: d => `<small class="text-muted">${d || '-'}</small>`
+                        render: d => `<div class="text-truncate" style="max-width: 150px;" title="${d || ''}"><small class="text-muted">${d || '-'}</small></div>`
                     }
                 ]
             });
-
             // Action Filter
             $('#btn-filter').click(() => table.ajax.reload());
 

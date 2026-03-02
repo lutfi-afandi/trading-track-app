@@ -21,7 +21,7 @@ if ($action == 'get_history_all') {
     $start_date = $_GET['start_date'] ?? '';
     $end_date = $_GET['end_date'] ?? '';
 
-    $query = "SELECT * FROM transaction_history WHERE 1=1";
+    $query = "SELECT * FROM transaction_history WHERE 1=1 ";
     $params = [];
 
     if (!empty($start_date)) {
@@ -33,7 +33,7 @@ if ($action == 'get_history_all') {
         $params[] = $end_date;
     }
 
-    $query .= " ORDER BY transaction_date DESC";
+    $query .= " ORDER BY transaction_date DESC, id DESC";
 
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);
