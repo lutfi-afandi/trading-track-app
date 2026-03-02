@@ -229,35 +229,35 @@
                         </div>
 
                         <div class="d-flex align-items-center">
-    <div class="text-end me-3">
-        <div class="mb-0">
-            <span class="fw-bold text-dark" style="font-size: 0.95rem;">${h.lot} Lot</span>
-            <span class="text-muted mx-1">@</span>
-            <span class="text-muted fw-medium" style="font-size: 0.85rem;">${formatIDR(h.price_per_lot)}</span>
-        </div>
-        
-        ${h.type === 'SELL' ? `
-            <div class="d-flex justify-content-end align-items-center gap-1">
-                <small class="text-muted" style="font-size: 0.7rem;">P/L:</small>
-                <span class="fw-bold ${h.profit_loss > 0 ? 'text-success' : 'text-danger'}" style="font-size: 0.85rem;">
-                    ${h.profit_loss > 0 ? '+' : ''}${formatIDR(h.profit_loss)}
-                </span>
-            </div>` 
-        : `
-            <div class="d-flex justify-content-end align-items-center">
-                <small class="text-muted text-truncate" style="font-size: 0.75rem; max-width: 120px;" title="${h.notes || ''}">
-                    ${h.notes ? `<i class="fa-regular fa-sticky-note me-1"></i>${h.notes}` : '-'}
-                </small>
-            </div>`}
-    </div>
+                            <div class="text-end me-3">
+                                <div class="mb-0">
+                                    <span class="fw-bold text-dark" style="font-size: 0.95rem;">${h.lot} Lot</span>
+                                    <span class="text-muted mx-1">@</span>
+                                    <span class="text-muted fw-medium" style="font-size: 0.85rem;">${formatIDR(h.price_per_lot)}</span>
+                                </div>
+                                
+                                ${h.type === 'SELL' ? `
+                                    <div class="d-flex justify-content-end align-items-center gap-1">
+                                        <small class="text-muted" style="font-size: 0.7rem;">P/L:</small>
+                                        <span class="fw-bold ${h.profit_loss > 0 ? 'text-success' : 'text-danger'}" style="font-size: 0.85rem;">
+                                            ${h.profit_loss > 0 ? '+' : ''}${formatIDR(h.profit_loss)}
+                                        </span>
+                                    </div>` 
+                                : `
+                                    <div class="d-flex justify-content-end align-items-center">
+                                        <small class="text-muted text-truncate" style="font-size: 0.75rem; max-width: 120px;" title="${h.notes || ''}">
+                                            ${h.notes ? `<i class="fa-regular fa-sticky-note me-1"></i>${h.notes}` : '-'}
+                                        </small>
+                                    </div>`}
+                            </div>
 
-    <button onclick="deleteTransaction(${h.id}, '${h.stock_code}')" 
-            class="btn btn-light btn-sm text-danger border-0 rounded-3 px-2 py-1 opacity-50 hover-opacity-100" 
-            style="background-color: #fef2f2;"
-            title="Batalkan">
-        <i class="fa-regular fa-trash-can" style="font-size: 0.85rem;"></i>
-    </button>
-</div>
+                            <button onclick="deleteTransaction(${h.id}, '${h.stock_code}')" 
+                                    class="btn btn-light btn-sm text-danger border-0 rounded-3 px-2 py-1 opacity-50 hover-opacity-100" 
+                                    style="background-color: #fef2f2;"
+                                    title="Batalkan">
+                                <i class="fa-regular fa-trash-can" style="font-size: 0.85rem;"></i>
+                            </button>
+                        </div>
                     </div>`;
                 });
                 $('#recent-activity-list').html(recentHtml || '<div class="p-4 text-center text-muted">No activity.</div>');
