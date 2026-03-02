@@ -9,215 +9,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f7fa;
-            color: #334155;
-        }
-
-        /* Sidebar Styling */
-        #sidebar {
-            min-width: 260px;
-            max-width: 260px;
-            background: #fff;
-            border-right: 1px solid #e2e8f0;
-            min-height: 100vh;
-            position: fixed;
-            transition: all 0.3s;
-        }
-
-        .main-content {
-            margin-left: 260px;
-            width: calc(100% - 260px);
-            padding: 40px;
-        }
-
-        .nav-link {
-            color: #64748b;
-            font-weight: 600;
-            padding: 12px 20px;
-            border-radius: 12px;
-            margin-bottom: 5px;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-        }
-
-        .nav-link:hover {
-            background: #f8fafc;
-            color: #4f46e5;
-        }
-
-        .nav-link.active {
-            background: #4f46e5;
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-        }
-
-        /* Modern Card */
-        .card {
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .card-header {
-            background: none;
-            border-bottom: 1px solid #f1f5f9;
-            padding: 20px;
-            font-weight: 700;
-        }
-
-        /* Trade Toggle Buy/Sell */
-        .trade-toggle {
-            background: #f1f5f9;
-            padding: 5px;
-            border-radius: 12px;
-            display: flex;
-        }
-
-        .trade-toggle input[type="radio"] {
-            display: none;
-        }
-
-        .trade-toggle label {
-            flex: 1;
-            text-align: center;
-            padding: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.85rem;
-            transition: 0.2s;
-            color: #64748b;
-        }
-
-        #buy-radio:checked+label {
-            background: #fff;
-            color: #059669;
-        }
-
-        #sell-radio:checked+label {
-            background: #fff;
-            color: #dc2626;
-        }
-
-        /* Table Style */
-        .table-portfolio thead th {
-            background-color: #f8fafc;
-            padding: 1.25rem 1rem !important;
-            color: #64748b;
-            font-size: 0.7rem;
-            letter-spacing: 0.05em;
-            border-bottom: 2px solid #f1f5f9;
-        }
-
-        .table-portfolio tbody td {
-            padding: 1.5rem 1rem !important;
-            vertical-align: middle;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .badge-buy {
-            background: #ecfdf5;
-            color: #059669;
-        }
-
-        .badge-sell {
-            background: #fef2f2;
-            color: #dc2626;
-        }
-
-        .stock-badge {
-            font-weight: 800;
-            color: #1e293b;
-            font-size: 1rem;
-        }
-
-        /* Sidebar Styling */
-        #sidebar {
-            min-width: 260px;
-            max-width: 260px;
-            background: #fff;
-            border-right: 1px solid #e2e8f0;
-            min-height: 100vh;
-            position: fixed;
-            transition: all 0.3s;
-            z-index: 1050;
-            /* Pastikan di atas konten */
-        }
-
-        /* Responsivitas untuk Layar Kecil */
-        @media (max-width: 992px) {
-            #sidebar {
-                margin-left: -260px;
-                /* Sembunyikan sidebar ke kiri */
-            }
-
-            #sidebar.active {
-                margin-left: 0;
-                /* Munculkan saat class 'active' ditambah */
-            }
-
-            .main-content {
-                margin-left: 0 !important;
-                width: 100% !important;
-                padding: 20px !important;
-            }
-
-            /* Overlay saat sidebar muncul di mobile */
-            .sidebar-overlay {
-                display: none;
-                position: fixed;
-                width: 100vw;
-                height: 100vh;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 1040;
-            }
-
-            .sidebar-overlay.show {
-                display: block;
-            }
-        }
-
-        .main-content {
-            margin-left: 260px;
-            width: calc(100% - 260px);
-            padding: 40px;
-            transition: all 0.3s;
-        }
-
-        /* Tombol Hamburger (Hanya muncul di mobile) */
-        #mobile-toggle {
-            display: none;
-        }
-
-        @media (max-width: 992px) {
-            #mobile-toggle {
-                display: block;
-                margin-bottom: 20px;
-            }
-        }
-    </style>
 </head>
 
 <body>
     <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <div class="d-flex">
-        <nav id="sidebar" class="p-4 d-flex flex-column">
-            <div class="mb-5 px-3">
-                <h4 class="fw-bold text-primary mb-0"><i class="fa-solid fa-chart-line me-2"></i>TradePulse</h4>
-                <small class="text-muted">Stock Portfolio v2.0</small>
-            </div>
-            <a href="index.php" class="nav-link"><i class="fa-solid fa-house me-2"></i> Dashboard</a>
-            <a href="history.php" class="nav-link active"><i class="fa-solid fa-history me-2"></i> Riwayat Transaksi</a>
-        </nav>
+        <?php include 'sidebar.php'; ?>
 
         <div class="main-content">
             <button id="mobile-toggle" class="btn btn-white border shadow-sm rounded-3 px-3 py-2" onclick="toggleSidebar()">
@@ -379,7 +178,15 @@
             return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         };
 
+
+
         $(document).ready(function() {
+            $.getJSON('api.php?action=get_dashboard', function(res) {
+                currentPortfolio = res.portfolio;
+                const plText = formatIDR(res.total_pl);
+                $('#total-profit, #stat-total-pl').text(plText).toggleClass('text-success', res.total_pl >= 0).toggleClass('text-danger', res.total_pl < 0);
+
+            });
             // Initialize DataTable
             const table = $('#table-history').DataTable({
                 ajax: {
